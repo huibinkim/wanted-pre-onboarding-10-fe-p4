@@ -18,6 +18,8 @@ interface RouterBase {
 
 interface UserAccessibleRouterElement extends RouterBase {
   withAuth?: boolean // 인증이 필요한 페이지 여부
+  // isAdminPage?: never // 어드민 페이지 여부
+
 }
 
 interface AdminAccessibleRouterElement extends RouterBase {
@@ -64,6 +66,14 @@ const routerData: RouterElement[] = [
     withAuth: true
   },
   // TODO 4-1: Admin페이지를 router에 추가
+  {
+    id: 5,
+    path: '/admin',
+    label: '어드민 페이지',
+    element: <AdminPage/>,
+    withAuth: true,
+    isAdminPage: true
+  }
 ]
 
 export const routers: RemixRouter = createBrowserRouter(
@@ -73,7 +83,10 @@ export const routers: RemixRouter = createBrowserRouter(
     if (router.withAuth) {
       return {
         path: router.path,
-        element: <GeneralLayout>{ router.element }</GeneralLayout>
+        element: <GeneralLayout
+          isAdminPage={ 'isAdminPage' in router && router.isAdminPage }>
+          { router.element }
+        </GeneralLayout>
       }
     } else {
       return {
@@ -94,6 +107,7 @@ export const SidebarContent: SidebarElement[] = routerData.reduce((prev, router)
       id: router.id,
       path: router.path,
       label: router.label,
+      isAdminOnly: 'isAdminPage' in router && router.isAdminPage
     }
   ]
 }, [] as SidebarElement[])
